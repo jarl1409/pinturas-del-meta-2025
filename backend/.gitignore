@@ -1,9 +1,12 @@
 # Node modules
 node_modules/
 
-# Build
-dist/
-build/
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
 
 # Entorno
 .env
@@ -12,8 +15,19 @@ build/
 .env.test.local
 .env.production.local
 
-# Logs
-*.log
+# Compilación
+dist/
+build/
+
+# Archivos de base de datos temporales
+*.sqlite
+*.sqlite3
+*.db
+
+# PM2 y procesos
+pids/
+*.pid
+*.seed
 
 # IDEs y editores
 .vscode/
