@@ -3,8 +3,26 @@ const Producto = require('../models/producto');
 // Crear
 exports.crearProducto = async (req, res) => {
   try {
-    const nuevo = new Producto(req.body);
-    const guardado = await nuevo.save();
+    const {
+      nombre,
+      precio,
+      descripcion,
+      categoria,
+      marca,
+      stock
+    } = req.body;
+
+    const nuevoProducto = new Producto({
+      nombre: string,
+      precio : Number,
+      descripcion: string,
+      categoria,
+      marca,
+      stock,
+      imagen: req.file ? req.file.path : '' // 👈 Guarda la ruta del archivo
+    });
+
+    const guardado = await nuevoProducto.save();
     res.status(201).json(guardado);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -31,7 +49,13 @@ exports.obtenerProductos = async (req, res) => {
 // Actualizar
 exports.actualizarProducto = async (req, res) => {
   try {
-    const actualizado = await Producto.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const actualizaciones = { ...req.body };
+
+    if (req.file) {
+      actualizaciones.imagen = req.file.path; // 👈 Actualizar imagen si viene archivo nuevo
+    }
+
+    const actualizado = await Producto.findByIdAndUpdate(req.params.id, actualizaciones, { new: true });
     res.json(actualizado);
   } catch (error) {
     res.status(400).json({ error: error.message });
