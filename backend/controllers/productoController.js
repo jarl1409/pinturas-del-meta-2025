@@ -1,4 +1,4 @@
-const Producto = require('../models/producto');
+const Producto = require("../models/producto");
 
 // Crear
 exports.crearProducto = async (req, res) => {
@@ -9,17 +9,19 @@ exports.crearProducto = async (req, res) => {
       descripcion,
       categoria,
       marca,
-      stock
+      stock,
+      presentacion,
     } = req.body;
 
     const nuevoProducto = new Producto({
-      nombre: string,
-      precio : Number,
-      descripcion: string,
+      nombre,
+      precio,
+      descripcion,
       categoria,
       marca,
       stock,
-      imagen: req.file ? req.file.path : '' // 👈 Guarda la ruta del archivo
+      presentacion,
+      imagen: req.file ? req.file.path : "",
     });
 
     const guardado = await nuevoProducto.save();
@@ -35,9 +37,9 @@ exports.obtenerProductos = async (req, res) => {
     const { nombre, marca, categoria } = req.query;
     const filtros = {};
 
-    if (nombre) filtros.nombre = new RegExp(nombre, 'i');
-    if (marca) filtros.marca = new RegExp(marca, 'i');
-    if (categoria) filtros.categoria = new RegExp(categoria, 'i');
+    if (nombre) filtros.nombre = new RegExp(nombre, "i");
+    if (marca) filtros.marca = new RegExp(marca, "i");
+    if (categoria) filtros.categoria = new RegExp(categoria, "i");
 
     const productos = await Producto.find(filtros);
     res.json(productos);
@@ -52,10 +54,15 @@ exports.actualizarProducto = async (req, res) => {
     const actualizaciones = { ...req.body };
 
     if (req.file) {
-      actualizaciones.imagen = req.file.path; // 👈 Actualizar imagen si viene archivo nuevo
+      actualizaciones.imagen = req.file.path;
     }
 
-    const actualizado = await Producto.findByIdAndUpdate(req.params.id, actualizaciones, { new: true });
+    const actualizado = await Producto.findByIdAndUpdate(
+      req.params.id,
+      actualizaciones,
+      { new: true }
+    );
+
     res.json(actualizado);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -66,7 +73,7 @@ exports.actualizarProducto = async (req, res) => {
 exports.eliminarProducto = async (req, res) => {
   try {
     await Producto.findByIdAndDelete(req.params.id);
-    res.json({ mensaje: 'Producto eliminado correctamente' });
+    res.json({ mensaje: "Producto eliminado correctamente" });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

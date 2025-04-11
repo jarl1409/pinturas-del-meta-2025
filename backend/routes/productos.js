@@ -8,22 +8,22 @@ const {
   eliminarProducto
 } = require('../controllers/productoController');
 
-// Configurar almacenamiento de archivos
+// Configuración de multer para almacenar archivos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Carpeta donde se guardan las imágenes
+    cb(null, 'uploads/');
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname); // Evitar nombres duplicados
+    cb(null, Date.now() + '-' + file.originalname);
   }
 });
 
 const upload = multer({ storage });
 
-// Rutas Crud
-router.post('/', upload.single('imagen'), crearProducto); // 👈 acepta imagen
+// Rutas
+router.post('/', upload.single('imagen'), crearProducto);
 router.get('/', obtenerProductos);
-router.put('/:id', upload.single('imagen'), actualizarProducto); // también puedes actualizar la imagen
+router.put('/:id', upload.single('imagen'), actualizarProducto);
 router.delete('/:id', eliminarProducto);
 
 module.exports = router;

@@ -6,6 +6,8 @@ const productoSchema = new mongoose.Schema({
   descripcion: String,
   categoria: String,
   marca: String,
+  presentacion: String,
+  imagen: String,
   stock: { type: Number, default: 0 },
   fechaCreacion: { type: Date, default: Date.now }
 });
