@@ -1,11 +1,13 @@
+// src/components/CotizacionMobile.jsx
+
 import { X } from "lucide-react";
 import WhatsappIcon from "../layouts/WhatsappSvg";
 
 export default function CotizacionMobile({ onClose }) {
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex items-end md:hidden">
-      {/* Panel blanco */}
-      <div className="w-full bg-white rounded-t-3xl p-5 max-h-[85vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm flex items-end md:hidden">
+      {/* Panel blanco con sombra */}
+      <div className="w-full bg-white rounded-t-3xl p-5 max-h-[85vh] overflow-y-auto shadow-2xl">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-extrabold text-red-600 uppercase">
@@ -54,7 +56,11 @@ export default function CotizacionMobile({ onClose }) {
         </div>
 
         {/* Botón enviar cotización */}
-        <button className="mt-6 w-full bg-green-600 text-white py-3 rounded-full hover:bg-red-700 transition flex items-center justify-center gap-2">
+        <button
+          className="
+        mt-6 w-full bg-green-600 text-white py-3 rounded-full 
+        active:scale-95 transition flex items-center justify-center gap-2"
+        >
           <WhatsappIcon className="text-white" />
           <span>Enviar cotización</span>
         </button>
