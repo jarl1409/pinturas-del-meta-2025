@@ -1,3 +1,5 @@
+// /home/jarl1409/proyectos/pinturas-del-meta-2025/backend/controllers/productoController.js
+
 const Producto = require("../models/producto");
 
 // Crear
@@ -21,7 +23,7 @@ exports.crearProducto = async (req, res) => {
       marca,
       stock,
       presentacion,
-      imagen: req.file ? req.file.path : "",
+      imagen: req.file ? `uploads/${req.file.filename}` : "",
     });
 
     const guardado = await nuevoProducto.save();

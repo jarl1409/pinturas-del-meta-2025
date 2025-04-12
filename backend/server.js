@@ -20,7 +20,7 @@ app.use(express.json()); // Leer datos JSON del body de las peticiones
 app.use("/api/productos", productosRoutes); // Todas las rutas de productos comenzarán por /api/productos
 
 // Mostrar las imagenes en url
-// app.use("/uploads", express.static("uploads")); 
+app.use("/uploads", express.static("uploads")); 
 
 // 👇 7. Ruta raíz opcional para testear en el navegador
 app.get("/", (req, res) => {

@@ -1,29 +1,33 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const multer = require('multer');
+const multer = require("multer");
+
+// Controladores
 const {
   crearProducto,
   obtenerProductos,
   actualizarProducto,
-  eliminarProducto
-} = require('../controllers/productoController');
+  eliminarProducto,
+} = require("../controllers/productoController");
 
-// Configuración de multer para almacenar archivos
+// Configuración de almacenamiento para imágenes (multer)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
+    // Eliminar espacios del nombre original
+    const cleanName = file.originalname.replace(/\s+/g, "-");
+    cb(null, `${Date.now()}-${cleanName}`);
+  },
 });
 
 const upload = multer({ storage });
 
-// Rutas
-router.post('/', upload.single('imagen'), crearProducto);
-router.get('/', obtenerProductos);
-router.put('/:id', upload.single('imagen'), actualizarProducto);
-router.delete('/:id', eliminarProducto);
+/* 📦 Rutas de productos */
+router.post("/", upload.single("imagen"), crearProducto); // Crear producto con imagen
+router.get("/", obtenerProductos); // Obtener todos o por filtro
+router.put("/:id", upload.single("imagen"), actualizarProducto); // Actualizar producto con imagen opcional
+router.delete("/:id", eliminarProducto); // Eliminar producto
 
 module.exports = router;
