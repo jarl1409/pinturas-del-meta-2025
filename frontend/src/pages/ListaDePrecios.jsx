@@ -1,4 +1,3 @@
-// src/pages/ListaDePrecios.jsx
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -17,27 +16,18 @@ export default function ListaDePrecios() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // useEffect se ejecuta cuando cambia el objeto searchParams (parámetros de búsqueda en la URL)
   useEffect(() => {
-    // Obtiene el valor del parámetro "q" de la URL. Si no existe, se asigna una cadena vacía.
     const query = searchParams.get("q") || "";
-
-    // Actualiza el estado local 'busqueda' con el valor del parámetro 'q'
     setBusqueda(query);
-  }, [searchParams]); // Dependencia: se vuelve a ejecutar si 'searchParams' cambia
+  }, [searchParams]);
 
-  // Obtiene todos los productos de la base de datos al montar el componente
   useEffect(() => {
     axios
-      // Realiza la solicitud GET al endpoint de productos
       .get("http://localhost:5000/api/productos")
-      // Actualiza el estado 'productos' con los datos obtenidos
       .then((res) => setProductos(res.data))
-      // Captura y muestra cualquier error que ocurra durante la solicitud
       .catch((err) => console.error("Error al obtener productos:", err));
-  }, []); // El efecto se ejecuta solo una vez al montar el componente
+  }, []);
 
-  // Filtro de productos
   const productosFiltrados = productos.filter(
     (p) =>
       p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -58,10 +48,6 @@ export default function ListaDePrecios() {
           Agregar producto
         </button>
       </div>
-      {/*Busqueda Desktop*/}
-      <div className="hidden md:block relative mb-4 ">
-        <Buscador placeholder={"Buscar por nombre, marca o categoría..."} />
-      </div>
 
       {/* Busqueda mobile */}
       <div className="relative mb-4 md:hidden">
@@ -74,10 +60,15 @@ export default function ListaDePrecios() {
         />
       </div>
 
-      {/* Contenedor de Listado de Productos y Cotizacion */}
+      {/* Contenedor de Listado de Productos y Cotización */}
       <div className="flex flex-col md:flex-row gap-6">
-        {/* Lista Productos o Producto Detalle */}
+        {/* Columna izquierda: Buscador + Lista */}
         <div className="w-full md:w-2/3">
+          {/* Busqueda Desktop */}
+          <div className="hidden md:block relative mb-4">
+            <Buscador placeholder={"Buscar por nombre, marca o categoría..."} />
+          </div>
+
           {productoSeleccionado ? (
             <ProductoDetalle
               producto={productoSeleccionado}
