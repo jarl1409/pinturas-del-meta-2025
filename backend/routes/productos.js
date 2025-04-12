@@ -1,3 +1,4 @@
+// /backend/routes/productos.js
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
@@ -6,7 +7,7 @@ const multer = require("multer");
 const {
   crearProducto,
   obtenerProductos,
-  obtenerProducto, 
+  obtenerProductoPorId,
   actualizarProducto,
   eliminarProducto,
 } = require("../controllers/productoController");
@@ -27,7 +28,7 @@ const upload = multer({ storage });
 /* 📦 Rutas de productos */
 router.post("/", upload.single("imagen"), crearProducto);
 router.get("/", obtenerProductos);
-router.get("/:id", obtenerProducto); 
+router.get("/:id", obtenerProductoPorId);
 router.put("/:id", upload.single("imagen"), actualizarProducto);
 router.delete("/:id", eliminarProducto);
 

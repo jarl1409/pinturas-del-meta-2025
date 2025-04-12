@@ -6,6 +6,7 @@ import EnConstruccion from "./pages/EnConstruccion";
 import ListaPrecios from "./pages/precios/ListaDePrecios";
 import CrearProducto from "./pages/precios/CrearProducto";
 import ProductoDetalle from "./components/productos/ProductoDetalle";
+import EditarProducto from "./pages/precios/EditarProducto";
 
 function App() {
   return (
@@ -15,8 +16,11 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/precios" element={<ListaPrecios />} />
+
         <Route path="/crear-producto" element={<CrearProducto />} />
+        <Route path="/editar-producto/:id" element={<EditarProducto />} />
         <Route path="/precios/:id" element={<ProductoDetalle />} />
+
         <Route path="/pintura" element={<EnConstruccion />} />
         <Route path="/complementarios" element={<EnConstruccion />} />
         <Route path="/contacto" element={<EnConstruccion />} />

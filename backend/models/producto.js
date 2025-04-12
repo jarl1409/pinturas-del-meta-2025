@@ -26,10 +26,12 @@ const productoSchema = new mongoose.Schema({
     required: true,
   },
   // Precio del producto - Campo obligatorio
-  precio: {
-    type: Number,
-    required: true,
-  },
+  precios: {
+    type: Map,
+    of: Number,
+    default: {},
+  }
+  ,
   // Descripción del producto (opcional)
   descripcion: {
     type: String,
@@ -42,20 +44,10 @@ const productoSchema = new mongoose.Schema({
   marca: {
     type: String,
   },
-  // Presentación del producto (opcional, ej. "galon", "1/4", etc.)
-  presentacion: {
-    type: String,
-    required: true,
-  },
   // Imagen asociada al producto (almacena la ruta o URL, opcional)
   imagen: {
     type: String,
     
-  },
-  // Stock del producto con valor por defecto 0
-  stock: {
-    type: Number,
-    default: 0,
   },
   // Fecha de creación del registro, se asigna la fecha actual por defecto
   fechaCreacion: {

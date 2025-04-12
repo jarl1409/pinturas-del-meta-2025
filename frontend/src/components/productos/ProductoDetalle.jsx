@@ -3,30 +3,44 @@ import { Pencil, Check, Upload, ArrowLeft, Plus } from "lucide-react";
 
 export default function ProductoDetalle({ producto, onVolver }) {
   const [editando, setEditando] = useState(false);
-  const [form, setForm] = useState({ ...producto });
+  const [form, setForm] = useState({
+    ...producto,
+    precios: producto.precios || {},
+  });
 
   useEffect(() => {
-    setForm({ ...producto });
+    setForm({ ...producto, precios: producto.precios || {} });
   }, [producto]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImagenChange = (e) => {
     const archivo = e.target.files[0];
     if (archivo) {
-      setForm({ ...form, imagen: URL.createObjectURL(archivo) });
+      setForm((prev) => ({ ...prev, imagen: URL.createObjectURL(archivo) }));
     }
   };
+
+  const handlePrecioCambio = (pres, value) => {
+    setForm((prev) => ({
+      ...prev,
+      precios: {
+        ...prev.precios,
+        [pres]: value === "" ? undefined : Number(value),
+      },
+    }));
+  };
+
+  const presentaciones = ["1/32", "1/16", "1/8", "1/4", "Galon", "Cuñete"];
 
   if (!producto)
     return <p className="text-center mt-10">Cargando producto...</p>;
 
   return (
     <div className="max-w-3xl mx-auto p-4 relative">
-      {/* Botón editar arriba derecha */}
       <button
         onClick={() => setEditando(!editando)}
         className="absolute top-4 right-4 bg-red-700 text-white p-2 rounded-full"
@@ -92,9 +106,53 @@ export default function ProductoDetalle({ producto, onVolver }) {
           ) : (
             <>
               <h2 className="text-xl font-bold text-black">{form.nombre}</h2>
+              <select
+                name="presentacion"
+                value={form.presentacion || ""}
+                onChange={handleChange}
+                className="bg-gray-200 rounded px-2 py-1 text-sm"
+              >
+                <option value="">Presentación</option>
+                {presentaciones.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
             </>
           )}
         </div>
+      </div>
+
+      {/* Precios por presentación */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold">Precios:</h3>
+
+        {presentaciones.map((pres) => {
+          const tienePrecio = form.precios && form.precios[pres] !== undefined;
+          if (!editando && !tienePrecio) return null;
+
+          return (
+            <div key={pres} className="flex justify-between items-center">
+              <p className="font-bold">{pres}</p>
+              <div className="flex items-center gap-2">
+                {editando ? (
+                  <input
+                    type="number"
+                    value={form.precios?.[pres] || ""}
+                    onChange={(e) => handlePrecioCambio(pres, e.target.value)}
+                    className="bg-gray-200 px-2 py-1 rounded text-right"
+                  />
+                ) : (
+                  <span className="font-bold">
+                    ${form.precios[pres].toLocaleString()}
+                  </span>
+                )}
+                <Plus className="w-5 h-5 border rounded p-0.5" />
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Precios */}
@@ -108,13 +166,13 @@ export default function ProductoDetalle({ producto, onVolver }) {
               <input
                 type="text"
                 name="precioSolo"
-                value={form.precioSolo || ""}
+                value={form.precio || ""}
                 onChange={handleChange}
                 className="bg-gray-200 px-2 py-1 rounded text-right"
               />
             ) : (
               <span className="font-bold">
-                ${form.precioSolo?.toLocaleString() || "00.000"}
+                ${form.precio?.toLocaleString() || "00.000"}
               </span>
             )}
             <Plus className="w-5 h-5 border rounded p-0.5" />
