@@ -1,11 +1,28 @@
-// src/components/ProductoDetalle.jsx
+// src/pages/ProductoDetalle.jsx
 
-import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { Pencil, Check, Upload, ArrowLeft, Plus } from "lucide-react";
 
-export default function ProductoDetalle({ producto, onVolver }) {
+export default function ProductoDetalle() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [producto, setProducto] = useState(null);
   const [editando, setEditando] = useState(false);
-  const [form, setForm] = useState({ ...producto });
+  const [form, setForm] = useState({});
+
+  // Obtener datos del producto
+  useEffect(() => {
+    axios
+      .get(`http://localhost:5000/api/productos/${id}`)
+      .then((res) => {
+        setProducto(res.data);
+        setForm(res.data);
+      })
+      .catch((err) => console.error("Error al obtener producto:", err));
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,9 +36,14 @@ export default function ProductoDetalle({ producto, onVolver }) {
     }
   };
 
+  if (!producto) return <p className="text-center mt-10">Cargando producto...</p>;
+
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <button onClick={onVolver} className="flex items-center mb-4 text-black">
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center mb-4 text-black"
+      >
         <ArrowLeft className="mr-1 w-5 h-5" /> Regresar
       </button>
 
@@ -30,11 +52,16 @@ export default function ProductoDetalle({ producto, onVolver }) {
           {editando ? (
             <label className="cursor-pointer">
               <Upload className="w-8 h-8" />
-              <input type="file" accept="image/*" className="hidden" onChange={handleImagenChange} />
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImagenChange}
+              />
             </label>
           ) : (
             <img
-              src={form.imagen || "https://via.placeholder.com/150"}
+              src={`http://localhost:5000/${form.imagen}`}
               alt={form.nombre}
               className="object-cover w-full h-full"
             />
@@ -102,7 +129,7 @@ export default function ProductoDetalle({ producto, onVolver }) {
                 className="bg-gray-200 px-2 py-1 rounded text-right"
               />
             ) : (
-              <span className="font-bold">${"00.000"}</span>
+              <span className="font-bold">${form.precioSolo?.toLocaleString() || "00.000"}</span>
             )}
             <Plus className="w-5 h-5 border rounded p-0.5" />
           </div>

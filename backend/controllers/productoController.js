@@ -50,6 +50,21 @@ exports.obtenerProductos = async (req, res) => {
   }
 };
 
+// Obtener producto por ID
+exports.obtenerProducto = async (req, res) => {
+  try {
+    const producto = await Producto.findById(req.params.id);
+
+    if (!producto) {
+      return res.status(404).json({ mensaje: "Producto no encontrado" });
+    }
+
+    res.json(producto);
+  } catch (error) {
+    res.status(500).json({ mensaje: "Error al obtener el producto" });
+  }
+};
+
 // Actualizar
 exports.actualizarProducto = async (req, res) => {
   try {

@@ -6,6 +6,7 @@ const multer = require("multer");
 const {
   crearProducto,
   obtenerProductos,
+  obtenerProducto, 
   actualizarProducto,
   eliminarProducto,
 } = require("../controllers/productoController");
@@ -16,7 +17,6 @@ const storage = multer.diskStorage({
     cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
-    // Eliminar espacios del nombre original
     const cleanName = file.originalname.replace(/\s+/g, "-");
     cb(null, `${Date.now()}-${cleanName}`);
   },
@@ -25,9 +25,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 /* 📦 Rutas de productos */
-router.post("/", upload.single("imagen"), crearProducto); // Crear producto con imagen
-router.get("/", obtenerProductos); // Obtener todos o por filtro
-router.put("/:id", upload.single("imagen"), actualizarProducto); // Actualizar producto con imagen opcional
-router.delete("/:id", eliminarProducto); // Eliminar producto
+router.post("/", upload.single("imagen"), crearProducto);
+router.get("/", obtenerProductos);
+router.get("/:id", obtenerProducto); 
+router.put("/:id", upload.single("imagen"), actualizarProducto);
+router.delete("/:id", eliminarProducto);
 
 module.exports = router;
