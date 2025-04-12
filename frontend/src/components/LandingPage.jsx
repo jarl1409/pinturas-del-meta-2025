@@ -1,6 +1,6 @@
-import UbicacionCard from "./UbicacionCard";
-import Cards from "./Cards";
-import HorarioAtencion from "./HorarioAtencion";
+import UbicacionCard from "./layout/UbicacionCard";
+import Cards from "./ui/Cards";
+import HorarioAtencion from "./layout/HorarioAtencion";
 import fotoFachadaPdm from "../assets/FotoFachadaPDM.png"
 
 export default function LandingPage() {

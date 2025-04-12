@@ -1,6 +1,6 @@
-import automotrizImg from "../assets/Automotriz_card.png";
-import industrialImg from "../assets/industrial_card.png";
-import arquitectonicaImg from "../assets/arquitectonica_card.png";
+import automotrizImg from "../../assets/Automotriz_card.png";
+import industrialImg from "../../assets/industrial_card.png";
+import arquitectonicaImg from "../../assets/arquitectonica_card.png";
 
 export default function Cards() {
   const cards = [

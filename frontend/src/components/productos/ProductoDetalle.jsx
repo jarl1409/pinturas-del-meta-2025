@@ -1,5 +1,3 @@
-// src/components/ProductoDetalle.jsx
-
 import { useState, useEffect } from "react";
 import { Pencil, Check, Upload, ArrowLeft, Plus } from "lucide-react";
 
@@ -23,19 +21,26 @@ export default function ProductoDetalle({ producto, onVolver }) {
     }
   };
 
-  if (!producto) return <p className="text-center mt-10">Cargando producto...</p>;
+  if (!producto)
+    return <p className="text-center mt-10">Cargando producto...</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="max-w-3xl mx-auto p-4 relative">
+      {/* Botón editar arriba derecha */}
       <button
-        onClick={onVolver}
-        className="flex items-center mb-4 text-black"
+        onClick={() => setEditando(!editando)}
+        className="absolute top-4 right-4 bg-red-700 text-white p-2 rounded-full"
+        title="Editar producto"
       >
+        {editando ? <Check /> : <Pencil />}
+      </button>
+
+      <button onClick={onVolver} className="flex items-center mb-4 text-black">
         <ArrowLeft className="mr-1 w-5 h-5" /> Regresar
       </button>
 
-      <div className="flex gap-4 items-start mb-6">
-        <div className="w-36 h-36 bg-gray-200 flex items-center justify-center text-2xl font-bold">
+      <div className="flex flex-col sm:flex-row gap-4 items-start mb-6">
+        <div className="w-36 h-36 bg-gray-200 flex items-center justify-center text-2xl font-bold overflow-hidden">
           {editando ? (
             <label className="cursor-pointer">
               <Upload className="w-8 h-8" />
@@ -65,12 +70,12 @@ export default function ProductoDetalle({ producto, onVolver }) {
                 onChange={handleChange}
                 className="text-xl font-bold w-full bg-gray-200 rounded px-2 py-1"
               />
-              <input
-                type="text"
+              <textarea
                 name="descripcion"
                 value={form.descripcion}
                 onChange={handleChange}
-                className="text-gray-700 w-full bg-gray-200 rounded px-2 py-1"
+                rows={4}
+                className="text-gray-700 w-full bg-gray-200 rounded px-2 py-1 resize-none"
               />
               <select
                 name="cantidad"
@@ -87,17 +92,9 @@ export default function ProductoDetalle({ producto, onVolver }) {
           ) : (
             <>
               <h2 className="text-xl font-bold text-black">{form.nombre}</h2>
-              <p className="text-gray-700">{form.descripcion}</p>
             </>
           )}
         </div>
-
-        <button
-          onClick={() => setEditando(!editando)}
-          className="bg-red-700 text-white p-2 rounded-full"
-        >
-          {editando ? <Check /> : <Pencil />}
-        </button>
       </div>
 
       {/* Precios */}
@@ -116,7 +113,9 @@ export default function ProductoDetalle({ producto, onVolver }) {
                 className="bg-gray-200 px-2 py-1 rounded text-right"
               />
             ) : (
-              <span className="font-bold">${form.precioSolo?.toLocaleString() || "00.000"}</span>
+              <span className="font-bold">
+                ${form.precioSolo?.toLocaleString() || "00.000"}
+              </span>
             )}
             <Plus className="w-5 h-5 border rounded p-0.5" />
           </div>
@@ -144,6 +143,11 @@ export default function ProductoDetalle({ producto, onVolver }) {
           </div>
         ))}
       </div>
+
+      <h3 className="text-xl font-bold text-black py-3">Sobre el producto:</h3>
+      <p className="text-gray-700 line-clamp-5 sm:line-clamp-none">
+        {form.descripcion}
+      </p>
     </div>
   );
 }

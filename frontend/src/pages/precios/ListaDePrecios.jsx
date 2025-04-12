@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import ListaProductos from "../components/ListaProductos";
-import ProductoDetalle from "../components/ProductoDetalle";
-import CotizacionPanel from "../components/CotizacionPanel";
-import CotizacionMobile from "../components/CotizacionMobile";
-import Buscador from "../components/Buscador";
+import ListaProductos from "../../components/productos/ListaProductos";
+import ProductoDetalle from "../../components/productos/ProductoDetalle";
+import CotizacionPanel from "../../components/cotizacion/CotizacionPanel";
+import CotizacionMobile from "../../components/cotizacion/CotizacionMobile";
+import Buscador from "../../components/ui/Buscador";
 
 export default function ListaDePrecios() {
   const [productos, setProductos] = useState([]);
@@ -45,7 +45,7 @@ export default function ListaDePrecios() {
           onClick={() => navigate("/crear-producto")}
           className="bg-green-500 text-white px-4 py-2 rounded"
         >
-          Agregar producto
+          Crear nuevo producto
         </button>
       </div>
 

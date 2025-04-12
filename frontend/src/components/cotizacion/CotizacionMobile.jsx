@@ -1,7 +1,7 @@
 // src/components/CotizacionMobile.jsx
 
 import { X } from "lucide-react";
-import WhatsappIcon from "../layouts/WhatsappSvg";
+import WhatsappIcon from "../ui/WhatsappSvg";
 
 export default function CotizacionMobile({ onClose }) {
   return (

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, Search, X } from "lucide-react";
-import logoPdm from "../assets/LogoPDM 1.png";
+import logoPdm from "../../assets/LogoPDM 1.png";
 
 export default function Header() {
   const location = useLocation();
