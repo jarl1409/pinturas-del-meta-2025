@@ -1,6 +1,6 @@
 // src/pages/ListaDePrecios.jsx
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import ListaProductos from "../components/ListaProductos";
@@ -14,6 +14,7 @@ export default function ListaDePrecios() {
   const [busqueda, setBusqueda] = useState("");
   const [mostrarCotizacion, setMostrarCotizacion] = useState(false);
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const query = searchParams.get("q") || "";
@@ -27,17 +28,26 @@ export default function ListaDePrecios() {
       .catch((err) => console.error("Error al obtener productos:", err));
   }, []);
 
-  const productosFiltrados = productos.filter((p) =>
-    p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-    p.marca?.toLowerCase().includes(busqueda.toLowerCase()) ||
-    p.categoria?.toLowerCase().includes(busqueda.toLowerCase())
+  const productosFiltrados = productos.filter(
+    (p) =>
+      p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+      p.marca?.toLowerCase().includes(busqueda.toLowerCase()) ||
+      p.categoria?.toLowerCase().includes(busqueda.toLowerCase())
   );
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-extrabold text-center text-black mb-8 uppercase">
-        Lista de Precios
-      </h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-extrabold text-black uppercase text-center md:text-left">
+          Lista de Precios
+        </h1>
+        <button
+          onClick={() => navigate("/crear-producto")}
+          className="bg-green-500 text-white px-4 py-2 rounded"
+        >
+          Agregar producto
+        </button>
+      </div>
 
       {/* 🔍 Búsqueda (sólo móvil) */}
       <div className="relative mb-4 md:hidden">

@@ -1,4 +1,4 @@
-// src/pages/ProductoDetalle.jsx
+// /home/jarl1409/proyectos/pinturas-del-meta-2025/frontend/src/components/ProductoDetalle.jsx
 
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -13,7 +13,6 @@ export default function ProductoDetalle() {
   const [editando, setEditando] = useState(false);
   const [form, setForm] = useState({});
 
-  // Obtener datos del producto
   useEffect(() => {
     axios
       .get(`http://localhost:5000/api/productos/${id}`)
