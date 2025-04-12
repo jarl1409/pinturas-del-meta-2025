@@ -7,6 +7,7 @@ import ListaProductos from "../components/ListaProductos";
 import ProductoDetalle from "../components/ProductoDetalle";
 import CotizacionPanel from "../components/CotizacionPanel";
 import CotizacionMobile from "../components/CotizacionMobile";
+import Buscador from "../components/Buscador";
 
 export default function ListaDePrecios() {
   const [productos, setProductos] = useState([]);
@@ -47,6 +48,12 @@ export default function ListaDePrecios() {
         >
           Agregar producto
         </button>
+      </div>
+      {/*busqueda Desktop*/}
+      <div className="hidden md:block relative mb-4 ">
+        <Buscador 
+          placeholder={"Buscar por nombre, marca o categoría..."}
+        />
       </div>
 
       {/* 🔍 Búsqueda (sólo móvil) */}

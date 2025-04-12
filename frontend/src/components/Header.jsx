@@ -30,7 +30,8 @@ export default function Header() {
     }
   };
 
-  const mostrarBuscador = location.pathname !== "/precios";
+  // Arreglar vista en lista de precios
+  const mostrarBuscador = location.pathname;
 
   return (
     <>
