@@ -1,17 +1,19 @@
+// src/pages/ListaDePrecios.jsx
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 
-// Components
 import ListaProductos from "../components/ListaProductos";
-import CotizacionMobile from "../components/CotizacionMobile";
+import ProductoDetalle from "../components/ProductoDetalle";
 import CotizacionPanel from "../components/CotizacionPanel";
+import CotizacionMobile from "../components/CotizacionMobile";
 
 export default function ListaDePrecios() {
   const [productos, setProductos] = useState([]);
-  const [searchParams] = useSearchParams();
+  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const [busqueda, setBusqueda] = useState("");
   const [mostrarCotizacion, setMostrarCotizacion] = useState(false);
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const query = searchParams.get("q") || "";
@@ -25,11 +27,10 @@ export default function ListaDePrecios() {
       .catch((err) => console.error("Error al obtener productos:", err));
   }, []);
 
-  const productosFiltrados = productos.filter(
-    (p) =>
-      p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      p.marca?.toLowerCase().includes(busqueda.toLowerCase()) ||
-      p.categoria?.toLowerCase().includes(busqueda.toLowerCase())
+  const productosFiltrados = productos.filter((p) =>
+    p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+    p.marca?.toLowerCase().includes(busqueda.toLowerCase()) ||
+    p.categoria?.toLowerCase().includes(busqueda.toLowerCase())
   );
 
   return (
@@ -38,7 +39,7 @@ export default function ListaDePrecios() {
         Lista de Precios
       </h1>
 
-      {/* 🔍 Barra de búsqueda (solo visible en mobile) */}
+      {/* 🔍 Búsqueda (sólo móvil) */}
       <div className="relative mb-4 md:hidden">
         <input
           type="text"
@@ -50,22 +51,33 @@ export default function ListaDePrecios() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-6">
-        {/* 🧱 Lista de productos */}
+        {/* Lista o detalle */}
         <div className="w-full md:w-2/3">
-          <div className="border border-gray-300 rounded-sm max-h-[70vh] overflow-y-auto">
-            {productosFiltrados.map((producto) => (
-              <ListaProductos key={producto._id} producto={producto} />
-            ))}
-          </div>
+          {productoSeleccionado ? (
+            <ProductoDetalle
+              producto={productoSeleccionado}
+              onVolver={() => setProductoSeleccionado(null)}
+            />
+          ) : (
+            <div className="border border-gray-300 rounded-sm max-h-[70vh] overflow-y-auto">
+              {productosFiltrados.map((producto) => (
+                <ListaProductos
+                  key={producto._id}
+                  producto={producto}
+                  onClick={() => setProductoSeleccionado(producto)}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* 🧾 Cotización panel escritorio */}
+        {/* Cotización escritorio */}
         <div className="w-full md:w-1/3 hidden md:block">
           <CotizacionPanel />
         </div>
       </div>
 
-      {/* 🛒 Botón flotante para abrir cotización en mobile */}
+      {/* Botón flotante (sólo mobile) */}
       <button
         onClick={() => setMostrarCotizacion(true)}
         className="fixed bottom-4 right-4 z-50 bg-red-600 text-white p-3 rounded-full shadow-md md:hidden"
@@ -74,11 +86,10 @@ export default function ListaDePrecios() {
         🛒
       </button>
 
-      {/* 📱 Cotización modal mobile */}
+      {/* Cotización móvil */}
       {mostrarCotizacion && (
-  <CotizacionMobile onClose={() => setMostrarCotizacion(false)} />
-)}
-
+        <CotizacionMobile onClose={() => setMostrarCotizacion(false)} />
+      )}
     </div>
   );
 }
