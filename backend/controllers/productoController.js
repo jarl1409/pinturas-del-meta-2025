@@ -4,13 +4,12 @@ const multer = require("multer");
 
 // Crear producto con imagen y precios por presentación
 exports.crearProducto = async (req, res) => {
+  for (let pair of data.entries()) {
+    console.log(pair[0], pair[1]);
+  }
+
   try {
-    const {
-      nombre,
-      descripcion,
-      categoria,
-      marca,
-    } = req.body;
+    const { nombre, descripcion, categoria, marca } = req.body;
 
     // Extraer precios como mapa
     const precios = {};
@@ -79,7 +78,10 @@ exports.actualizarProducto = async (req, res) => {
     const actualizaciones = { ...req.body };
 
     // Parsear precios si vienen como campos individuales
-    if (!actualizaciones.precios && Object.keys(req.body).some(k => k.startsWith("precios["))) {
+    if (
+      !actualizaciones.precios &&
+      Object.keys(req.body).some((k) => k.startsWith("precios["))
+    ) {
       actualizaciones.precios = {};
       for (const key in req.body) {
         if (key.startsWith("precios[")) {

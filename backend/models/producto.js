@@ -23,7 +23,7 @@ const productoSchema = new mongoose.Schema({
   // Nombre del producto - Campo obligatorio
   nombre: {
     type: String,
-    required: true,
+    required: [true, "El nombre es obligario"],
   },
   // Precio del producto - Campo obligatorio
   precios: {

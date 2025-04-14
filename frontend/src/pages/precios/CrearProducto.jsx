@@ -1,10 +1,15 @@
+// /home/jarl1409/proyectos/pinturas-del-meta-2025/frontend/src/pages/precios/CrearProducto.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft } from "lucide-react";
 
+import { usePresentaciones } from "../../hooks/usePresentaciones";
+
 export default function CrearProducto() {
   const navigate = useNavigate();
+
+  const { precios, handlePrecioChange, presentaciones } = usePresentaciones();
 
   const [form, setForm] = useState({
     nombre: "",
@@ -13,25 +18,11 @@ export default function CrearProducto() {
     marca: "",
   });
 
-  const [precios, setPrecios] = useState({
-    "1/32": "",
-    "1/16": "",
-    "1/8": "",
-    "1/4": "",
-    "galon": "",
-    "cuñete": "",
-  });
-
   const [imagen, setImagen] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handlePrecioChange = (e) => {
-    const { name, value } = e.target;
-    setPrecios((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImagenChange = (e) => {
@@ -43,16 +34,26 @@ export default function CrearProducto() {
 
     const data = new FormData();
 
+    // Agrega los campos del formulario
     Object.entries(form).forEach(([key, value]) => {
       data.append(key, value);
     });
 
-    // Filtrar precios válidos (evita campos vacíos)
+    // Agrega los precios con el formato esperado por el backend
     Object.entries(precios).forEach(([key, value]) => {
-      if (value) data.append(`precios[${key}]`, value);
+      const parsed = parseFloat(value);
+      if (!isNaN(parsed) && parsed > 0) {
+        data.append(`precios[${key}]`, parsed);
+      }
     });
+    
 
     if (imagen) data.append("imagen", imagen);
+
+    for (let pair of data.entries()) {
+      console.log(`${pair[0]}: ${pair[1]}`);
+    }
+    
 
     try {
       await axios.post("http://localhost:5000/api/productos", data);
@@ -111,16 +112,16 @@ export default function CrearProducto() {
         {/* Precios por presentación */}
         <div className="border rounded p-4 bg-gray-50">
           <h3 className="font-bold mb-2">Precios por presentación</h3>
-          {Object.keys(precios).map((key) => (
-            <div key={key} className="flex items-center gap-2 mb-2">
-              <label className="w-24 capitalize">{key}:</label>
+          {presentaciones.map((pres) => (
+            <div key={pres} className="flex items-center gap-2 mb-2">
+              <label className="w-24 capitalize">{pres}:</label>
               <input
                 type="number"
-                name={key}
-                value={precios[key]}
+                name={pres}
+                value={precios[pres]}
                 onChange={handlePrecioChange}
                 className="flex-1 border rounded p-2"
-                placeholder={`Precio para ${key}`}
+                placeholder={`Precio para ${pres}`}
               />
             </div>
           ))}

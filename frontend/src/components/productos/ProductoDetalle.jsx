@@ -1,16 +1,40 @@
+// src/pages/ProductoDetalle.jsx
 import { useState, useEffect } from "react";
-import { Pencil, Check, Upload, ArrowLeft, Plus } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Pencil,
+  Check,
+  Upload,
+  ArrowLeft,
+  Save,
+  Presentation,
+} from "lucide-react";
+import axios from "axios";
 
-export default function ProductoDetalle({ producto, onVolver }) {
+import { usePresentaciones } from "../../hooks/usePresentaciones";
+
+export default function ProductoDetalle() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const { precios, setPrecios, handlePrecioChange, presentaciones } =
+    usePresentaciones();
+  const [presentationSelect, setPresentationSelect] = useState("");
+
+  const [producto, setProducto] = useState(null);
+  const [form, setForm] = useState(null);
   const [editando, setEditando] = useState(false);
-  const [form, setForm] = useState({
-    ...producto,
-    precios: producto.precios || {},
-  });
 
   useEffect(() => {
-    setForm({ ...producto, precios: producto.precios || {} });
-  }, [producto]);
+    axios
+      .get(`http://localhost:5000/api/productos/${id}`)
+      .then((res) => {
+        setProducto(res.data);
+        setForm({ ...res.data });
+        setPrecios(res.data.precios || {}); // <-- importante
+      })
+      .catch((err) => console.error("Error al obtener producto:", err));
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,7 +44,7 @@ export default function ProductoDetalle({ producto, onVolver }) {
   const handleImagenChange = (e) => {
     const archivo = e.target.files[0];
     if (archivo) {
-      setForm((prev) => ({ ...prev, imagen: URL.createObjectURL(archivo) }));
+      setForm((prev) => ({ ...prev, imagen: archivo }));
     }
   };
 
@@ -34,27 +58,63 @@ export default function ProductoDetalle({ producto, onVolver }) {
     }));
   };
 
-  const presentaciones = ["1/32", "1/16", "1/8", "1/4", "Galon", "Cuñete"];
+  const handleGuardarCambios = async () => {
+    try {
+      const data = new FormData();
+      data.append("nombre", form.nombre);
+      data.append("descripcion", form.descripcion);
+      data.append("categoria", form.categoria || "");
+      data.append("marca", form.marca || "");
 
-  if (!producto)
-    return <p className="text-center mt-10">Cargando producto...</p>;
+      Object.entries(form.precios).forEach(([key, value]) => {
+        if (value !== undefined) {
+          data.append(`precios[${key}]`, value);
+        }
+      });
+
+      if (form.imagen instanceof File) {
+        data.append("imagen", form.imagen);
+      }
+
+      const res = await axios.put(
+        `http://localhost:5000/api/productos/${id}`,
+        data
+      );
+      setProducto(res.data);
+      setForm({ ...res.data, precios: res.data.precios });
+      setEditando(false);
+    } catch (error) {
+      console.error("❌ Error al guardar cambios:", error);
+    }
+  };
+
+  if (!form) return <p className="text-center mt-10">Cargando producto...</p>;
 
   return (
     <div className="max-w-3xl mx-auto p-4 relative">
-      <button
-        onClick={() => setEditando(!editando)}
-        className="absolute top-4 right-4 bg-red-700 text-white p-2 rounded-full"
-        title="Editar producto"
-      >
-        {editando ? <Check /> : <Pencil />}
-      </button>
+      <div className="absolute top-4 right-4">
+        <button
+          onClick={editando ? handleGuardarCambios : () => setEditando(true)}
+          className={`text-white p-2 rounded-full ${
+            editando ? "bg-green-600" : "bg-red-700"
+          }`}
+          title={editando ? "Guardar cambios" : "Editar producto"}
+        >
+          {editando ? <Check /> : <Pencil />}
+        </button>
+      </div>
 
-      <button onClick={onVolver} className="flex items-center mb-4 text-black">
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center mb-4 text-black"
+      >
         <ArrowLeft className="mr-1 w-5 h-5" /> Regresar
       </button>
 
       <div className="flex flex-col sm:flex-row gap-4 items-start mb-6">
         <div className="w-36 h-36 bg-gray-200 flex items-center justify-center text-2xl font-bold overflow-hidden">
+          {/* Visualizacion del producto 
+          Detecta si esta editando o no */}
           {editando ? (
             <label className="cursor-pointer">
               <Upload className="w-8 h-8" />
@@ -66,17 +126,24 @@ export default function ProductoDetalle({ producto, onVolver }) {
               />
             </label>
           ) : (
-            <img
-              src={`http://localhost:5000/${form.imagen}`}
-              alt={form.nombre}
-              className="object-cover w-full h-full"
-            />
+            <div className="w-36 h-36 overflow-hidden rounded-md bg-gray-100">
+              <img
+                src={
+                  typeof form.imagen === "string"
+                    ? `http://localhost:5000/${form.imagen}`
+                    : URL.createObjectURL(form.imagen)
+                }
+                alt={form.nombre}
+                className="object-contain w-full h-full"
+              />
+            </div>
           )}
         </div>
 
         <div className="flex-1 space-y-2">
           {editando ? (
             <>
+              {/* VISTA EDICION PRODUCTO */}
               <input
                 type="text"
                 name="nombre"
@@ -91,121 +158,76 @@ export default function ProductoDetalle({ producto, onVolver }) {
                 rows={4}
                 className="text-gray-700 w-full bg-gray-200 rounded px-2 py-1 resize-none"
               />
-              <select
-                name="cantidad"
-                value={form.cantidad || ""}
-                onChange={handleChange}
-                className="bg-gray-200 rounded px-2 py-1 text-sm"
-              >
-                <option value="">Cantidad</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-              </select>
             </>
           ) : (
             <>
+              {/* VISTA PRODUCTO */}
               <h2 className="text-xl font-bold text-black">{form.nombre}</h2>
+              <p className="text-gray-700">{form.descripcion}</p>
+
+              {/* Opciones de presentacion del producto */}
               <select
                 name="presentacion"
-                value={form.presentacion || ""}
-                onChange={handleChange}
-                className="bg-gray-200 rounded px-2 py-1 text-sm"
+                onChange={(e) => setPresentationSelect(e.target.value)}
+                className="bg-gray-200 px-2 py-1 rounded w-fit"
               >
-                <option value="">Presentación</option>
-                {presentaciones.map((p) => (
-                  <option key={p} value={p}>
-                    {p}
-                  </option>
-                ))}
+                <option value="">Cantidad</option>
+                {presentaciones
+                  .filter((pres) => precios[pres] && !isNaN(precios[pres]))
+                  .map((pres) => (
+                    <option key={pres} value={pres}>
+                      {pres}
+                    </option>
+                  ))}
               </select>
             </>
           )}
         </div>
       </div>
-
-      {/* Precios por presentación */}
+      {/* Visualizacion de precios */}
       <div className="space-y-4">
         <h3 className="text-xl font-bold">Precios:</h3>
 
-        {presentaciones.map((pres) => {
-          const tienePrecio = form.precios && form.precios[pres] !== undefined;
-          if (!editando && !tienePrecio) return null;
+        {!editando && presentationSelect ? (
+          <div className="flex justify-between items-center">
+            <p className="font-bold">Precio solo de {presentationSelect}</p>
+            <span>
+              $
+              {form.precios[presentationSelect]?.toLocaleString() ||
+                "No disponible"}
+            </span>
+          </div>
+        ) : (
+          <p className="mt-4 text-sm text-gray-600 italic">
+            Seleccione una cantidad para ver el precio.
+          </p>
+        )}
+        {editando &&
+          presentaciones.map((pres) => {
+            const tienePrecio = form.precios?.[pres] !== undefined;
+            if (!editando && !tienePrecio) return null;
 
-          return (
-            <div key={pres} className="flex justify-between items-center">
-              <p className="font-bold">{pres}</p>
-              <div className="flex items-center gap-2">
-                {editando ? (
-                  <input
-                    type="number"
-                    value={form.precios?.[pres] || ""}
-                    onChange={(e) => handlePrecioCambio(pres, e.target.value)}
-                    className="bg-gray-200 px-2 py-1 rounded text-right"
-                  />
-                ) : (
-                  <span className="font-bold">
-                    ${form.precios[pres].toLocaleString()}
-                  </span>
-                )}
-                <Plus className="w-5 h-5 border rounded p-0.5" />
+            return (
+              <div key={pres} className="flex justify-between items-center">
+                <p className="font-bold">{pres}</p>
+                <div className="flex items-center gap-2">
+                  {editando ? (
+                    <input
+                      type="number"
+                      value={form.precios[pres] || ""}
+                      onChange={(e) => handlePrecioCambio(pres, e.target.value)}
+                      className="bg-gray-200 px-2 py-1 rounded text-right"
+                    />
+                  ) : (
+                    <span className="font-bold">
+                      ${form.precios[pres]?.toLocaleString()}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
-
-      {/* Precios */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold">Precios:</h3>
-
-        <div className="flex justify-between items-center">
-          <p className="font-bold">Precio solo:</p>
-          <div className="flex items-center gap-2">
-            {editando ? (
-              <input
-                type="text"
-                name="precioSolo"
-                value={form.precio || ""}
-                onChange={handleChange}
-                className="bg-gray-200 px-2 py-1 rounded text-right"
-              />
-            ) : (
-              <span className="font-bold">
-                ${form.precio?.toLocaleString() || "00.000"}
-              </span>
-            )}
-            <Plus className="w-5 h-5 border rounded p-0.5" />
-          </div>
-        </div>
-
-        <p className="font-bold">Precio con catalizador:</p>
-        {["Endurecedor X-20", "Endurecedor IXELL"].map((cat, idx) => (
-          <div key={idx} className="flex justify-between items-center">
-            <p>{cat}</p>
-            <div className="flex items-center gap-2">
-              <span className="font-bold">$00.000</span>
-              <Plus className="w-5 h-5 border rounded p-0.5" />
-            </div>
-          </div>
-        ))}
-
-        <p className="font-bold">Precio con disolvente:</p>
-        {["U-203", "D-807"].map((dis, idx) => (
-          <div key={idx} className="flex justify-between items-center">
-            <p>{dis}</p>
-            <div className="flex items-center gap-2">
-              <span className="font-bold">$00.000</span>
-              <Plus className="w-5 h-5 border rounded p-0.5" />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <h3 className="text-xl font-bold text-black py-3">Sobre el producto:</h3>
-      <p className="text-gray-700 line-clamp-5 sm:line-clamp-none">
-        {form.descripcion}
-      </p>
     </div>
   );
 }

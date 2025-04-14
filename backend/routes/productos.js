@@ -24,6 +24,9 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+// AQUI FUE LO ULTIMO QUE INTENTE HACER EL 13 DE ABRIL
 
 /* 📦 Rutas de productos */
 router.post("/", upload.single("imagen"), crearProducto);

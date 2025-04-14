@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import ListaProductos from "../../components/productos/ListaProductos";
 import ProductoDetalle from "../../components/productos/ProductoDetalle";
 import CotizacionPanel from "../../components/cotizacion/CotizacionPanel";
 import CotizacionMobile from "../../components/cotizacion/CotizacionMobile";
 import Buscador from "../../components/ui/Buscador";
+import ProductoItem from "../../components/productos/ProductoItem";
 
 export default function ListaDePrecios() {
   const [productos, setProductos] = useState([]);
@@ -66,7 +66,12 @@ export default function ListaDePrecios() {
         <div className="w-full md:w-2/3">
           {/* Busqueda Desktop */}
           <div className="hidden md:block relative mb-4">
-            <Buscador placeholder={"Buscar por nombre, marca o categoría..."} />
+            <Buscador
+              valor={busqueda}
+              onCambio={(valor) => setBusqueda(valor)}
+              onSubmit={(e) => e.preventDefault()}
+              placeholder="Buscar por nombre, marca o categoría..."
+            />
           </div>
 
           {productoSeleccionado ? (
@@ -77,7 +82,7 @@ export default function ListaDePrecios() {
           ) : (
             <div className="border border-gray-300 rounded-sm max-h-[70vh] overflow-y-auto">
               {productosFiltrados.map((producto) => (
-                <ListaProductos
+                <ProductoItem
                   key={producto._id}
                   producto={producto}
                   onClick={() => setProductoSeleccionado(producto)}
